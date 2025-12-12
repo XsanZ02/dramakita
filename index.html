@@ -3,273 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0f0f0f">
-<title>Video Player</title>
+<meta name="theme-color" content="#000000">
+<title>Drama Kita</title>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-    /* RESET & BASE */
+    /* --- TAMPILAN TETAP SAMA (PREMIUM) --- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-        font-family: 'Roboto', sans-serif; 
-        background-color: #0f0f0f; 
-        color: white; 
-        overflow-x: hidden;
-    }
-
-    /* HEADER */
-    .header {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 10px 15px; background: #0f0f0f; position: sticky; top: 0; z-index: 10;
-        border-bottom: 1px solid #222;
-    }
-    .logo { font-weight: bold; font-size: 18px; display: flex; align-items: center; letter-spacing: -0.5px; color: #fff;}
-    .logo span { color: #cc0000; margin-right: 5px; font-size: 20px;}
-
-    /* PLAYER CONTAINER */
-    .video-wrapper {
-        width: 100%; max-width: 600px; margin: 0 auto;
-        position: relative; background: #000; cursor: pointer;
-    }
-    .thumbnail-box {
-        position: relative; width: 100%; padding-top: 56.25%; /* 16:9 Aspect Ratio */
-        overflow: hidden; background: #111;
-    }
-    .thumbnail {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-        object-fit: cover; opacity: 0.8; transition: opacity 0.3s;
-    }
+    body { font-family: 'Roboto', sans-serif; background-color: #000; color: white; overflow-x: hidden; }
     
-    /* PLAY BUTTON STYLE */
-    .play-overlay {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.3);
-        display: flex; align-items: center; justify-content: center;
-    }
-    .play-btn {
-        width: 70px; height: 70px;
-        background: rgba(204, 0, 0, 0.9);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 0 20px rgba(204,0,0,0.4);
-        animation: pulse 2s infinite;
-    }
-    .play-triangle {
-        width: 0; height: 0;
-        border-top: 12px solid transparent; border-bottom: 12px solid transparent;
-        border-left: 22px solid white; margin-left: 5px;
-    }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; background: #000; border-bottom: 1px solid #222; }
+    .logo { font-weight: bold; font-size: 18px; color: #fff; display: flex; align-items: center;}
+    .logo span { color: #f00; margin-right: 5px; font-size: 22px; }
 
-    /* INFO AREA */
+    .video-wrapper { width: 100%; max-width: 600px; margin: 0 auto; position: relative; background: #000; cursor: pointer; }
+    .thumbnail-box { position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; background: #111; }
+    .thumbnail { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+    
+    .play-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; }
+    .play-btn { width: 75px; height: 75px; background: rgba(220, 0, 0, 0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px rgba(220,0,0,0.5); animation: pulse 2s infinite; }
+    .play-triangle { width: 0; height: 0; border-top: 14px solid transparent; border-bottom: 14px solid transparent; border-left: 24px solid white; margin-left: 6px; }
+
     .video-info { padding: 15px; max-width: 600px; margin: 0 auto; }
     .video-title { font-size: 18px; font-weight: 500; line-height: 1.4; margin-bottom: 10px; color: #fff; }
     .video-meta { font-size: 13px; color: #aaa; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;}
     .badge-hd { background: #333; color: #fff; padding: 2px 5px; border-radius: 3px; font-size: 10px; border: 1px solid #555; }
-
-    /* ACTION BUTTONS */
     .actions { display: flex; justify-content: space-around; border-top: 1px solid #222; border-bottom: 1px solid #222; padding: 15px 0; margin-top: 10px;}
     .action-btn { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 12px; gap: 8px; cursor: pointer; }
-    .action-btn:hover { color: white; }
-    .icon { font-size: 20px; }
+    
+    .loading-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #333; border-radius: 50%; border-top-color: #f00; animation: spin 0.8s ease-in-out infinite; margin-bottom: 15px; }
 
-    /* LOADING SCREEN */
-    .loading-screen {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background: #000; z-index: 20;
-        display: none; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .spinner {
-        width: 40px; height: 40px; border: 4px solid #333; 
-        border-radius: 50%; border-top-color: #cc0000; animation: spin 0.8s ease-in-out infinite; margin-bottom: 15px;
-    }
+    .admin-panel { max-width: 400px; margin: 50px auto; padding: 30px; background: #111; border-radius: 12px; text-align: center; border: 1px solid #333; display: none; }
+    input { width: 100%; padding: 15px; background: #222; border: 1px solid #444; color: white; border-radius: 8px; outline: none; font-size: 14px; margin-bottom: 20px;}
+    button.gen-btn { width: 100%; padding: 15px; background: #f00; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;}
+    .result-box { margin-top: 20px; word-break: break-all; background: #000; padding: 15px; border-radius: 8px; display: none; border: 1px dashed #555; font-size: 12px;}
+    .copy-btn { margin-top:10px; background: #333; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
 
-    /* ADMIN PANEL STYLE */
-    .admin-panel {
-        max-width: 450px; margin: 40px auto; padding: 25px;
-        background: #1a1a1a; border-radius: 12px; text-align: center; border: 1px solid #333;
-        display: none;
-    }
-    .input-group { margin-bottom: 15px; text-align: left; }
-    .input-group label { display: block; color: #aaa; margin-bottom: 5px; font-size: 12px; }
-    input { 
-        width: 100%; padding: 12px; background: #2a2a2a; 
-        border: 1px solid #444; color: white; border-radius: 6px; outline: none;
-    }
-    button.gen-btn { 
-        width: 100%; padding: 14px; background: linear-gradient(45deg, #cc0000, #ff0000); color: white; 
-        border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px;
-    }
-    .result-box { margin-top: 20px; word-break: break-all; background: #000; padding: 15px; border-radius: 6px; display: none; color: #0f0; font-size: 13px; border: 1px dashed #444;}
-
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(204, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); } }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220, 0, 0, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(220, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 0, 0, 0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
-<!-- === MODE PENGUNJUNG (PLAYER) === -->
+<!-- === VISITOR VIEW === -->
 <div id="visitor-view" style="display: none;">
     <div class="header">
-        <div class="logo"><span>▶</span> Play Video</div>
-        <div style="font-size: 14px; color: #aaa;">Login</div>
+        <div class="logo"><span>▶</span> YouTube</div>
+        <div style="font-size: 14px; color: #888;">HD</div>
     </div>
 
     <div class="video-wrapper" onclick="handleClick()">
         <div class="thumbnail-box">
-            <!-- Gambar Thumbnail akan muncul disini -->
             <img id="main-thumb" src="" class="thumbnail" alt="Video">
-            <div class="play-overlay">
-                <div class="play-btn">
-                    <div class="play-triangle"></div>
-                </div>
-            </div>
+            <div class="play-overlay"><div class="play-btn"><div class="play-triangle"></div></div></div>
         </div>
-        
         <div id="loader" class="loading-screen">
-            <div class="spinner"></div>
-            <p style="color: #aaa; font-size: 14px;">Memuat Video...</p>
+            <div class="spinner"></div><p style="color: #aaa; font-size: 14px;">Membuka Video...</p>
         </div>
     </div>
 
     <div class="video-info" onclick="handleClick()">
-        <div class="video-title" id="video-title-text">Full Video: Watch Now (HD)</div>
-        <div class="video-meta">
-            <span class="badge-hd">HD 1080p</span>
-            <span>• 3.4M Views</span>
-            <span>• Viral Today</span>
-        </div>
-        
+        <div class="video-title">Full Video: Watch Now (HD)</div>
+        <div class="video-meta"><span class="badge-hd">1080p</span><span>• 5.2M Views</span><span>• Trending</span></div>
         <div class="actions">
-            <div class="action-btn"><div class="icon">👍</div>Like</div>
-            <div class="action-btn"><div class="icon">💬</div>Comment</div>
-            <div class="action-btn"><div class="icon">🚀</div>Share</div>
-            <div class="action-btn"><div class="icon">⬇️</div>Download</div>
+            <div class="action-btn">👍 12K</div><div class="action-btn">💬 482</div><div class="action-btn">🚀 Share</div><div class="action-btn">⬇️ Download</div>
         </div>
     </div>
 </div>
 
-<!-- === MODE ADMIN (UNIVERSAL GENERATOR) === -->
+<!-- === ADMIN VIEW === -->
 <div id="admin-view" class="admin-panel">
-    <h3 style="color:white; margin-bottom: 20px;">🌐 Universal Link Generator</h3>
-    
-    <div class="input-group">
-        <label>1. Link Tujuan (YouTube / LK21 / Web Apa Saja)</label>
-        <input type="text" id="target-input" placeholder="https://..." />
-    </div>
-
-    <div class="input-group">
-        <label>2. Link Gambar Poster / Thumbnail (Opsional)</label>
-        <input type="text" id="thumb-input" placeholder="https://..." />
-        <small style="color:#666; font-size: 10px;">*Biarkan kosong jika link YouTube, otomatis ambil thumbnail.</small>
-    </div>
-
-    <button class="gen-btn" onclick="generateUniversalLink()">GENERATE LINK</button>
-    
+    <h3 style="color:white; margin-bottom: 25px;">⚡ Smart Link Generator</h3>
+    <input type="text" id="target-input" placeholder="Paste Link (Youtube / Lainnya)..." autocomplete="off"/>
+    <button class="gen-btn" onclick="generateSmartLink()">BUAT LINK PENDEK</button>
     <div id="result" class="result-box"></div>
 </div>
 
 <script>
-    // --- GANTI LINK ADSTERRA ANDA DISINI ---
+    // --- SETUP IKLAN ---
     const myAdsterraLink = "https://www.effectivegatecpm.com/fnzc8b0iw?key=c99c0949991c9b065fa16ec0295db5b4";
+    const defaultThumb = "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000&auto=format&fit=crop"; 
 
-    // --- LOGIKA UTAMA ---
+    // --- DETECTION LOGIC ---
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // Kita cek parameter 'url' (untuk link umum) atau 'v' (untuk youtube lama)
-    const targetUrl = urlParams.get('url'); 
-    const customImg = urlParams.get('img');
-    const youtubeId = urlParams.get('v');
+    const ytShortCode = urlParams.get('v'); // Parameter pendek untuk Youtube
+    const webLongCode = urlParams.get('x'); // Parameter panjang untuk Web lain
 
-    // Default Image jika tidak ada gambar (Gambar Player Gelap)
-    const defaultThumb = "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80";
+    let finalTarget = "";
 
-    if (targetUrl || youtubeId) {
-        // --- MODE VISITOR ---
+    // 1. Cek Apakah ini Link Youtube Pendek?
+    if (ytShortCode) {
         document.getElementById('visitor-view').style.display = 'block';
-        const thumbImg = document.getElementById('main-thumb');
-
-        if (youtubeId) {
-            // Jika format lama (?v=...)
-            thumbImg.src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
-            document.title = "Nonton Video YouTube";
-        } else if (targetUrl) {
-            // Jika format baru (?url=...)
-            if (customImg) {
-                thumbImg.src = decodeURIComponent(customImg);
-            } else {
-                // Coba deteksi jika user malas input gambar tapi linknya Youtube
-                const ytMatch = targetUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-                if (ytMatch) {
-                    thumbImg.src = `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
-                } else {
-                    thumbImg.src = defaultThumb;
-                }
-            }
+        // Susun ulang link youtube dari ID pendek
+        finalTarget = "https://www.youtube.com/watch?v=" + ytShortCode;
+        // Ambil thumbnail youtube
+        document.getElementById('main-thumb').src = `https://img.youtube.com/vi/${ytShortCode}/hqdefault.jpg`;
+        document.title = "YouTube Video";
+    } 
+    // 2. Cek Apakah ini Link Web Lain (Base64)?
+    else if (webLongCode) {
+        document.getElementById('visitor-view').style.display = 'block';
+        try {
+            finalTarget = atob(webLongCode); // Decode link panjang
+            document.getElementById('main-thumb').src = defaultThumb;
             document.title = "Video Player";
-        }
-
-    } else {
-        // --- MODE ADMIN ---
+        } catch (e) { alert("Link Error"); }
+    } 
+    // 3. Masuk Mode Admin
+    else {
         document.getElementById('admin-view').style.display = 'block';
     }
 
-    // --- FUNGSI KLIK PENGUNJUNG ---
+    // --- KLIK ACTION ---
     function handleClick() {
-        let finalDest = "";
-        
-        // Tentukan tujuan akhir
-        if (youtubeId) {
-            finalDest = "https://www.youtube.com/watch?v=" + youtubeId;
-        } else if (targetUrl) {
-            finalDest = decodeURIComponent(targetUrl); // Decode agar link kembali normal
-        } else {
-            return;
-        }
-
-        // Tampilkan Loading
+        if (!finalTarget) return;
         document.getElementById('loader').style.display = 'flex';
-
-        // 1. Buka Tujuan Asli di Tab Baru
-        window.open(finalDest, '_blank');
-
-        // 2. Redirect Tab Ini ke Iklan (3 Detik Delay)
-        setTimeout(function() {
-            window.location.href = myAdsterraLink;
-        }, 3000);
+        window.open(finalTarget, '_blank');
+        setTimeout(function() { window.location.href = myAdsterraLink; }, 2500);
     }
 
-    // --- FUNGSI GENERATOR LINK (ADMIN) ---
-    function generateUniversalLink() {
-        const targetInp = document.getElementById('target-input').value.trim();
-        const thumbInp = document.getElementById('thumb-input').value.trim();
+    // --- GENERATOR CERDAS ---
+    function generateSmartLink() {
+        const input = document.getElementById('target-input').value.trim();
         const resultBox = document.getElementById('result');
-
-        if (!targetInp) {
-            alert("Isi dulu Link Tujuannya!");
-            return;
-        }
-
-        // Base URL (Domain Anda)
-        // Hapus parameter lama jika ada
         const baseUrl = window.location.href.split('?')[0]; 
-        
-        // Encode URL agar karakter aneh tidak merusak link
-        const encodedTarget = encodeURIComponent(targetInp);
-        
-        let finalLink = `${baseUrl}?url=${encodedTarget}`;
+        let finalLink = "";
 
-        // Jika ada gambar custom
-        if (thumbInp) {
-            const encodedImg = encodeURIComponent(thumbInp);
-            finalLink += `&img=${encodedImg}`;
+        if (!input) { alert("Isi link dulu!"); return; }
+
+        // Cek Apakah Input adalah YouTube?
+        // Regex untuk menangkap ID Youtube (11 karakter)
+        const ytMatch = input.match(/(?:youtu\.be\/|youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+
+        if (ytMatch) {
+            // JIKA YOUTUBE: Ambil ID-nya saja (Contoh: dQw4w9WgXcQ)
+            // Hasil Link: domain.com/?v=dQw4w9WgXcQ (Sangat Pendek!)
+            const videoId = ytMatch[1];
+            finalLink = `${baseUrl}?v=${videoId}`;
+        } else {
+            // JIKA BUKAN YOUTUBE: Terpaksa Encode Base64
+            // Hasil Link: domain.com/?x=aHR0cHM6Ly... (Agak Panjang)
+            const shortCode = btoa(input);
+            finalLink = `${baseUrl}?x=${shortCode}`;
         }
 
-        // Tampilkan Hasil
         resultBox.style.display = 'block';
         resultBox.innerHTML = `
-            <div style="margin-bottom:5px; color:#fff;">Salin Link Ini:</div>
-            <a href="${finalLink}" style="color:#0f0; word-break:break-all; text-decoration:none;">${finalLink}</a>
-            <br><br>
-            <button onclick="navigator.clipboard.writeText('${finalLink}')" style="background:#333; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Copy to Clipboard</button>
+            <div style="color:#aaa; margin-bottom:5px;">Link Hasil (Auto Detect):</div>
+            <a href="${finalLink}" style="color:#0f0; text-decoration:none; font-size:13px;">${finalLink}</a>
+            <br>
+            <button class="copy-btn" onclick="navigator.clipboard.writeText('${finalLink}')">Salin Link</button>
         `;
     }
 </script>
