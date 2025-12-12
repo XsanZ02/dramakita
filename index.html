@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Player</title>
+<style>
+    body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+    
+    /* GAYA VIDEO PLAYER */
+    .player-container {
+        max-width: 600px; margin: 20px auto; background: #000;
+        border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        position: relative; cursor: pointer; display: none;
+    }
+    .thumbnail { width: 100%; display: block; opacity: 0.8; }
+    .play-btn {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 70px; height: 70px; background: rgba(255,0,0,0.9); border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5); animation: pulse 2s infinite;
+    }
+    .play-icon {
+        width: 0; height: 0; border-top: 12px solid transparent;
+        border-bottom: 12px solid transparent; border-left: 20px solid white; margin-left: 4px;
+    }
+    .controls {
+        position: absolute; bottom: 0; left: 0; width: 100%; height: 40px;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        display: flex; align-items: center; padding: 0 10px;
+    }
+    .bar { height: 4px; background: #f00; width: 30%; border-radius: 2px; }
+    
+    /* GAYA ADMIN PANEL */
+    .admin-panel {
+        max-width: 500px; margin: 50px auto; padding: 20px;
+        background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        text-align: center; display: none;
+    }
+    input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
+    button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    .result-box { margin-top: 15px; word-break: break-all; background: #eee; padding: 10px; display: none;}
+
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
+</style>
+</head>
+<body>
+
+<!-- VISITOR VIEW -->
+<div id="visitor-view" class="player-container" onclick="handleClick()">
+    <img id="yt-thumb" src="" class="thumbnail" alt="Video Content">
+    <div class="play-btn"><div class="play-icon"></div></div>
+    <div class="controls"><div class="bar"></div></div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div id="admin-view" class="admin-panel">
+    <h3>🎥 Generator Link + Auto Youtube</h3>
+    <p>Masukkan Link YouTube Asli:</p>
+    <input type="text" id="yt-input" placeholder="Contoh: https://youtu.be/..." />
+    <button onclick="generateLink()">Buat Link Viral</button>
+    <div id="result" class="result-box"></div>
+</div>
+
+<script>
+    // --- KONFIGURASI ---
+    // Ganti dengan Link Adsterra Anda
+    const myAdsterraLink = "https://www.effectivegatecpm.com/fnzc8b0iw?key=c99c0949991c9b065fa16ec0295db5b4";
+
+    // --- LOGIKA UTAMA ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('v');
+
+    if (videoId) {
+        // Mode Visitor: Tampilkan Player
+        document.getElementById('visitor-view').style.display = 'block';
+        document.getElementById('yt-thumb').src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        document.title = "Play Video"; 
+    } else {
+        // Mode Admin: Tampilkan Generator
+        document.getElementById('admin-view').style.display = 'block';
+    }
+
+    // --- FUNGSI DUAL ACTION (IKLAN + YOUTUBE) ---
+    function handleClick() {
+        if (!videoId) return;
+
+        // Link Youtube Asli
+        const youtubeLink = "https://www.youtube.com/watch?v=" + videoId;
+
+        // 1. Buka Iklan Adsterra di Tab Baru (Agar tidak mengganggu view user)
+        window.open(myAdsterraLink, '_blank');
+
+        // 2. Redirect halaman saat ini ke YouTube Asli (Langsung)
+        // Diberi jeda sedikit (300ms) agar browser sempat memproses perintah window.open di atas
+        setTimeout(function() {
+            window.location.href = youtubeLink;
+        }, 300);
+    }
+
+    // --- FUNGSI GENERATOR ---
+    function generateLink() {
+        const input = document.getElementById('yt-input').value;
+        const resultBox = document.getElementById('result');
+        let vidId = "";
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = input.match(regExp);
+
+        if (match && match[2].length === 11) {
+            vidId = match[2];
+            const finalLink = window.location.origin + window.location.pathname + "?v=" + vidId;
+            resultBox.style.display = 'block';
+            resultBox.innerHTML = `<strong>Link Siap Copy:</strong><br><a href="${finalLink}">${finalLink}</a>`;
+        } else {
+            alert("Link YouTube Salah!");
+        }
+    }
+</script>
+
+</body>
+</html>
